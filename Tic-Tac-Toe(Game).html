@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Impressive Tic-Tac-Toe</title>
+    <style>
+        body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #6e7dff, #a7a9ff);
+    color: #fff;
+    text-align: center;
+    margin-top: 20px;
+}
+
+.crt {
+    background-color: #000;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.4); /* Green glow for CRT effect */
+    position: relative;
+    width: 80%;
+    max-width: 600px;
+    margin: 0 auto;
+    overflow: hidden;
+}
+
+.crt-screen {
+    background: #222;
+    border-radius: 15px;
+    position: relative;
+    padding: 10px;
+    margin: 20px 0;
+    height: 400px;
+    overflow: hidden;
+    /* Simulating curvature of the screen */
+    transform: perspective(800px) rotateX(5deg) rotateY(5deg);
+}
+
+.crt-screen:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 255, 0, 0.1);
+    background-image: linear-gradient(rgba(0, 255, 0, 0.1) 0%, rgba(0, 255, 0, 0.2) 100%);
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.crt-screen .scanlines {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(transparent, transparent 2px, rgba(0, 255, 0, 0.1) 2px, rgba(0, 255, 0, 0.1) 4px);
+    opacity: 0.2;
+    pointer-events: none;
+}
+
+.crt-text {
+    color: #0f0;
+    font-size: 20px;
+    font-family: 'Courier New', Courier, monospace;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to Impressive Tic-Tac-Toe!</h1>
+        <p>Get ready to play with a sleek design and vibrant colors.</p>
+        <button id="b" type="button" class="btn btn-primary btn-lg" name="button">Restart!</button>
+        <div id="game-status" class="game-over"></div>
+    </div>
+
+    <table align="center">
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+    </table>
+
+    <script>
+        var restart = document.querySelector('#b');
+        var squares = document.querySelectorAll('td');
+        var gameStatus = document.querySelector('#game-status');
+        var currentPlayer = 'X';  // Start with 'X'
+
+        // Function to check if there is a winner
+        function checkWinner() {
+            const winningCombos = [
+                [0, 1, 2],  // top row
+                [3, 4, 5],  // middle row
+                [6, 7, 8],  // bottom row
+                [0, 3, 6],  // first column
+                [1, 4, 7],  // second column
+                [2, 5, 8],  // third column
+                [0, 4, 8],  // diagonal 1
+                [2, 4, 6]   // diagonal 2
+            ];
+
+            for (let combo of winningCombos) {
+                const [a, b, c] = combo;
+                if (squares[a].textContent !== '' && squares[a].textContent === squares[b].textContent && squares[a].textContent === squares[c].textContent) {
+                    gameStatus.textContent = `${squares[a].textContent} wins!`;
+                    gameStatus.style.color = '#4caf50';
+                    gameStatus.style.display = 'block';
+                    highlightWinningCells(combo);  // Highlight winning cells
+                    disableBoard();  // Disable further moves after a win
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        // Function to highlight the winning cells
+        function highlightWinningCells(combo) {
+            for (let index of combo) {
+                squares[index].classList.add('winning-cell');
+            }
+        }
+
+        // Function to disable the board after a win
+        function disableBoard() {
+            for (let i = 0; i < squares.length; i++) {
+                squares[i].removeEventListener('click', changeMarker);  // Remove click events
+            }
+        }
+
+        // Function to reset the game
+        function clearBoard() {
+            for (let i = 0; i < squares.length; i++) {
+                squares[i].textContent = '';
+                squares[i].classList.remove('winning-cell');
+                squares[i].style.background = 'linear-gradient(145deg, #f3f4f6, #e2e3e5)';
+            }
+            gameStatus.textContent = '';
+            gameStatus.style.display = 'none';
+            currentPlayer = 'X';  // Reset to 'X' starting player
+            for (let i = 0; i < squares.length; i++) {
+                squares[i].addEventListener('click', changeMarker);  // Reattach click events
+            }
+        }
+
+        // Function to handle marker change and game progress
+        function changeMarker() {
+            if (this.textContent === '') {
+                this.textContent = currentPlayer;
+                this.classList.add(currentPlayer.toLowerCase());  // Add class for 'X' or 'O'
+                if (!checkWinner()) {
+                    currentPlayer = currentPlayer === 'X' ? 'O' : 'X';  // Switch to the other player
+                }
+            }
+        }
+
+        // Attach click event listeners to each square
+        for (let i = 0; i < squares.length; i++) {
+            squares[i].addEventListener('click', changeMarker);
+        }
+
+        // Attach restart functionality
+        restart.addEventListener('click', clearBoard);
+    </script>
+
+</body>
+</html>
